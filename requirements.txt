@@ -1,0 +1,11 @@
+# Core dependencies
+python-nmap==0.7.1
+requests==2.32.3
+selenium==4.30.0
+wappalyzer==1.0.11
+shodan==1.31.0
+beautifulsoup4==4.13.3
+dnspython==2.7.0
+
+# Subfinder (must be installed separately via binary)
+# Download from: https://github.com/projectdiscovery/subfinder/releases
