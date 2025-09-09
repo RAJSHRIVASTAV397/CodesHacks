@@ -1,0 +1,43 @@
+{
+    "general": {
+        "threads": 10,
+        "timeout": 300,
+        "rate_limit": 10,
+        "user_agent": "CodesHacks/1.0",
+        "follow_redirects": true,
+        "verify_ssl": false,
+        "debug": true
+    },
+    "output": {
+        "directory": "results_passive",
+        "format": ["txt", "json"],
+        "verbosity": "debug",
+        "save_screenshots": false,
+        "report_template": "default"
+    },
+    "scanning": {
+        "max_depth": 2,
+        "exclude_patterns": [
+            "*.jpg",
+            "*.png",
+            "*.gif",
+            "*.css",
+            "*.js"
+        ],
+        "timeout_per_scan": 300
+    },
+    "tools": {
+        "nmap": {
+            "enabled": true,
+            "arguments": "-sS -sV -p 80,443,8080,8443",
+            "timeout": 300
+        },
+        "whatweb": {
+            "enabled": true,
+            "aggression": 1
+        }
+    },
+    "proxy": {
+        "no_proxy": "localhost,127.0.0.1"
+    }
+}

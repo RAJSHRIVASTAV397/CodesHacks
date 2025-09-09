@@ -1,0 +1,136 @@
+{
+    "general": {
+        "threads": 10,
+        "timeout": 300,
+        "rate_limit": 50,
+        "user_agent": "CodesHacks/1.0",
+        "follow_redirects": true,
+        "verify_ssl": false,
+        "debug": false
+    },
+    "output": {
+        "directory": "results",
+        "format": ["txt", "json", "html"],
+        "verbosity": "info",
+        "save_screenshots": true,
+        "report_template": "default"
+    },
+    "scanning": {
+        "max_depth": 3,
+        "exclude_patterns": [
+            "*.jpg",
+            "*.png",
+            "*.gif",
+            "*.css",
+            "*.js"
+        ],
+        "include_patterns": [
+            "*.php",
+            "*.asp",
+            "*.jsp"
+        ],
+        "timeout_per_scan": 600
+    },
+    "wordlists": {
+        "directories": "",
+        "subdomains": "",
+        "sensitive_files": "",
+        "custom": ""
+    },
+    "tools": {
+        "nmap": {
+            "enabled": true,
+            "arguments": "-sS -sV -sC -A -p- -T4",
+            "timeout": 900
+        },
+        "nikto": {
+            "enabled": true,
+            "arguments": "-Tuning 123bx -Format htm",
+            "timeout": 600
+        },
+        "sqlmap": {
+            "enabled": true,
+            "arguments": "--batch --random-agent",
+            "risk": 1,
+            "level": 1
+        },
+        "wpscan": {
+            "enabled": true,
+            "arguments": "--random-user-agent",
+            "api_token": ""
+        },
+        "gobuster": {
+            "enabled": true,
+            "threads": 10,
+            "status_codes": "200,204,301,302,307,401,403"
+        },
+        "sslyze": {
+            "enabled": true,
+            "arguments": "--regular"
+        },
+        "nuclei": {
+            "enabled": true,
+            "severity": "critical,high,medium",
+            "rate_limit": 150
+        },
+        "whatweb": {
+            "enabled": true,
+            "aggression": 3
+        },
+        "droopescan": {
+            "enabled": true,
+            "cms": ["drupal", "joomla", "wordpress"]
+        },
+        "skipfish": {
+            "enabled": true,
+            "max_depth": 10
+        },
+        "arachni": {
+            "enabled": true,
+            "checks": "active/*",
+            "timeout": 3600
+        }
+    },
+    "proxy": {
+        "http": "",
+        "https": "",
+        "no_proxy": "localhost,127.0.0.1"
+    },
+    "authentication": {
+        "username": "",
+        "password": "",
+        "token": "",
+        "cookie_file": ""
+    },
+    "reporting": {
+        "template": "default",
+        "include_evidence": true,
+        "group_by": "severity",
+        "min_severity": "low",
+        "formats": ["txt", "html", "json"],
+        "screenshots": true,
+        "executive_summary": true
+    },
+    "notifications": {
+        "email": {
+            "enabled": false,
+            "smtp_server": "",
+            "smtp_port": 587,
+            "username": "",
+            "password": "",
+            "from_address": "",
+            "to_address": ""
+        },
+        "slack": {
+            "enabled": false,
+            "webhook_url": "",
+            "channel": ""
+        }
+    },
+    "api_keys": {
+        "shodan": "",
+        "censys": "",
+        "virustotal": "",
+        "wpscan": ""
+    }
+}
