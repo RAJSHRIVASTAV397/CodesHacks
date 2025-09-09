@@ -48,20 +48,20 @@ class DependencyInstaller:
     def install_python_packages(self):
         """Install required Python packages."""
         requirements = [
-            'requests>=2.32.5',
-            'python-nmap>=0.7.1',
-            'beautifulsoup4>=4.13.5',
-            'configparser>=7.2.0',
-            'dnspython>=2.8.0',
-            'aiohttp>=3.12.15',
-            'selenium>=4.30.0',
-            'sslyze>=6.2.0',
-            'python-Wappalyzer>=0.3.1',
-            'httpx>=0.28.1',
-            'urllib3>=2.5.0',
-            'shodan>=1.31.0',
-            'censys>=2.2.18',
-            'vulners>=3.1.0'
+            'requests>=2.33.0',
+            'python-nmap>=0.7.2',
+            'beautifulsoup4>=4.14.0',
+            'configparser>=7.3.0',
+            'dnspython>=2.9.0',
+            'aiohttp>=3.13.0',
+            'selenium>=4.31.0',
+            'sslyze>=6.3.0',
+            'python-Wappalyzer>=0.4.0',
+            'httpx>=0.29.0',
+            'urllib3>=2.6.0',
+            'shodan>=1.32.0',
+            'censys>=2.3.0',
+            'vulners>=3.2.0'
         ]
         
         print("Installing Python packages...")
@@ -165,6 +165,107 @@ class DependencyInstaller:
             except subprocess.CalledProcessError as e:
                 print(f"Error installing {tool}: {e}")
     
+    def upgrade_python_packages(self):
+        """Upgrade installed Python packages to latest versions."""
+        print("\nUpgrading Python packages...")
+        try:
+            subprocess.run([sys.executable, '-m', 'pip', 'install', '--upgrade'] + 
+                         [req.split('>=')[0] for req in self.get_requirements()],
+                         check=True)
+            print("Python packages upgraded successfully")
+        except subprocess.CalledProcessError as e:
+            print(f"Error upgrading Python packages: {e}")
+    
+    def upgrade_system_packages(self):
+        """Upgrade system packages."""
+        upgrade_commands = {
+            'apt': 'apt update && apt upgrade -y',
+            'yum': 'yum update -y',
+            'pacman': 'pacman -Syu --noconfirm',
+            'brew': 'brew upgrade',
+            'choco': 'choco upgrade all -y'
+        }
+        
+        for pm_name, upgrade_cmd in upgrade_commands.items():
+            if pm_name in self.package_managers:
+                print(f"\nUpgrading packages using {pm_name}...")
+                try:
+                    if pm_name != 'choco' and self.os_type != 'windows':
+                        upgrade_cmd = f"sudo {upgrade_cmd}"
+                    subprocess.run(upgrade_cmd.split(), check=True)
+                    print(f"Packages upgraded successfully using {pm_name}")
+                except subprocess.CalledProcessError as e:
+                    print(f"Error upgrading packages with {pm_name}: {e}")
+    
+    def upgrade_go_tools(self):
+        """Upgrade Go-based tools."""
+        if not self._cmd_exists('go'):
+            print("Go is not installed. Please install Go first.")
+            return
+            
+        print("\nUpgrading Go tools...")
+        for tool in [
+            'github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest',
+            'github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest',
+            'github.com/projectdiscovery/httpx/cmd/httpx@latest',
+            'github.com/ffuf/ffuf@latest',
+            'github.com/OJ/gobuster/v3@latest'
+        ]:
+            try:
+                subprocess.run(['go', 'install', '-u', tool], check=True)
+                print(f"Upgraded {tool.split('/')[-2]}")
+            except subprocess.CalledProcessError as e:
+                print(f"Error upgrading {tool}: {e}")
+    
+    def upgrade_rust_tools(self):
+        """Upgrade Rust-based tools."""
+        if not self._cmd_exists('cargo'):
+            print("Rust is not installed. Please install Rust first.")
+            return
+            
+        print("\nUpgrading Rust tools...")
+        try:
+            subprocess.run(['cargo', 'install-update', '-a'], check=True)
+            print("Rust tools upgraded successfully")
+        except subprocess.CalledProcessError as e:
+            print(f"Error upgrading Rust tools: {e}")
+    
+    def get_requirements(self) -> List[str]:
+        """Get list of required Python packages."""
+        return [
+            'requests>=2.33.0',
+            'python-nmap>=0.7.2',
+            'beautifulsoup4>=4.14.0',
+            'configparser>=7.3.0',
+            'dnspython>=2.9.0',
+            'aiohttp>=3.13.0',
+            'selenium>=4.31.0',
+            'sslyze>=6.3.0',
+            'python-Wappalyzer>=0.4.0',
+            'httpx>=0.29.0',
+            'urllib3>=2.6.0',
+            'shodan>=1.32.0',
+            'censys>=2.3.0',
+            'vulners>=3.2.0'
+        ]
+    
+    def upgrade_all(self):
+        """Upgrade all dependencies."""
+        print("Starting CodesHacks dependency upgrade...")
+        
+        # Check if running as root on Unix-like systems
+        if self.os_type != 'windows' and os.geteuid() != 0:
+            print("Please run this script as root (sudo) for system package upgrades")
+            sys.exit(1)
+        
+        self.upgrade_python_packages()
+        self.upgrade_system_packages()
+        self.upgrade_go_tools()
+        self.upgrade_rust_tools()
+        
+        print("\nDependency upgrade complete!")
+        print("Note: Some tools may require manual upgrade or configuration.")
+    
     def install_all(self):
         """Install all dependencies."""
         print("Starting CodesHacks dependency installation...")
@@ -183,8 +284,13 @@ class DependencyInstaller:
         print("Note: Some tools may require manual installation or configuration.")
 
 def main():
+    """Main function to handle installation and upgrades."""
     installer = DependencyInstaller()
-    installer.install_all()
+    
+    if len(sys.argv) > 1 and sys.argv[1] == '--upgrade':
+        installer.upgrade_all()
+    else:
+        installer.install_all()
 
 if __name__ == '__main__':
     main()

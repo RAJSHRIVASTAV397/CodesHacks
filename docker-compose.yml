@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  codeshacks:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+      - CODESHACKS_CONFIG=/app/config.json
+      - CODESHACKS_DEBUG=1
+    command: python codeshacks.py
+    network_mode: host  # Required for network scanning
+    privileged: true   # Required for some security tools
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    
+  tests:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+      - CODESHACKS_CONFIG=/app/config.json
+      - CODESHACKS_DEBUG=1
+    command: pytest --cov=./ --cov-report=xml
